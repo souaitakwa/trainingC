@@ -123,6 +123,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "TrainingC"
+    }
+  },
+  "defaultProject": "TrainingC",
+  "cli": {
+    "analytics": false
+  }
 }
