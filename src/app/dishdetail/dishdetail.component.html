@@ -1,23 +1,62 @@
+<div class="container"
+    fxLayout="row"
+    fxLayout.sm="column"
+    fxLayout.xs="column"
+    fxLayoutAlign.gt-md="space-around center"
+    fxLayoutGap="10px" 
+    fxLayoutGap.xs="0">
 
-<div fxFlex *ngIf="selectedDish">
+  <div fxFlex="40">
+
+    <div fxFlex *ngIf="dish">
+        <mat-card >
+          <mat-card-header>
+            <mat-card-title>
+              <h3>{{dish.name | uppercase}}</h3>
+            </mat-card-title>
+          </mat-card-header>
+          <img mat-card-image src={{dish.image}} alt={{dish.name}}>
+          <mat-card-content>
+            <p>{{dish.description}}</p>
+          </mat-card-content>
+
+         <mat-card-actions>
+              <button mat-button>LIKE</button>
+              <button mat-button>SHARE</button>
+            </mat-card-actions>
+        </mat-card>
+      </div>
+
+  </div>
+
+  
+  <div fxFlex="40"  >
     <mat-card>
       <mat-card-header>
         <mat-card-title>
-          <h3>{{selectedDish.name | uppercase}}</h3>
+          <h3>Comments</h3>
         </mat-card-title>
-      </mat-card-header>
-      <img mat-card-image src={{selectedDish.image}} alt={{selectedDish.name}}>
-      <mat-card-content>
-        <p>{{selectedDish.description}}
-        </p>
+      </mat-card-header >
+      <mat-card-content *ngFor="let  Comment of dish.comments" >
+        <div  *ngIf="Commentss">
+        <p>{{Comment.comment}}</p>
+        <p>{{Comment.rating}} stars</p>
+         <p>{{Comment.author}}    {{ Commentss.date | date:'mediumDate'}} </p>
+        </div>
       </mat-card-content>
-      <mat-card-actions>
-        <button mat-button>LIKE</button>
-        <button mat-button>SHARE</button>
-      </mat-card-actions>
+      
     </mat-card>
   </div>
+ 
+   
+<!--
+  <div fxFlex="40"*ngFor="let Commentss of comments > -->
+   
 
 
-  <p>dishdetail works!</p>
+
+
+ 
+
+</div>
 
