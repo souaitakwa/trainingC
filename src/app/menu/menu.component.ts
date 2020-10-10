@@ -20,7 +20,10 @@ selectedDish : Dish;
   ngOnInit(): void {
  //   this.dishes = this.dishService.getDishes();
 
-  this.dishService.getDishes().then(dishes => this.dishes =dishes);
+ // this.dishService.getDishes().then(dishes => this.dishes =dishes); when we use promises 
+
+ // now when we use observables 
+ this.dishService.getDishes().subscribe(dishes => this.dishes =dishes); 
   }
 
   onSelect(dish: Dish){
