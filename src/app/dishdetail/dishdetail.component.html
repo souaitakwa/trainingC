@@ -48,18 +48,108 @@
         <p>{{Comment.comment}}</p>
         <p>{{Comment.rating}} stars</p>
         <p>{{Comment.author}}    {{ Comment.date | date:'mediumDate'}} </p>
+
+
      </div>
+
       </mat-list-item>
-      
+      <p>{{ feedbackForm.value.author   }}    </p>
+      <p>{{ feedbackForm.value.rating  }}    </p>
+      <p>{{ feedbackForm.value.comment }}    </p>
+<H4 *ngIf ="feedbackForm.value.author">  <p >{{feedbackForm.value.date | date:'mediumDate'}}</p> </H4>
+    
+
+
+
     </mat-card>
 
-    <div [hidden]="dish">
-      <mat-spinner></mat-spinner><h4>Loading . . . Please Wait</h4>
+   <!-- <div fxFlex fxFlexOffset="20px" class="form-size">
+    
+      <p>{{ feedbackForm.value | json }} </p>
+    </div>
+-->
+  <div>
+
+
+
+      <mat-card >
+
+        <form novalidate [formGroup]="feedbackForm" #fform="ngForm" (ngSubmit)="onSubmit()">
+          <p>
+      
+            <mat-form-field class="half-width">
+              <input matInput formControlName="author" placeholder="Name" type="text"  [(ngModel)]="author" name="author" required>
+              <mat-error *ngIf="formErrors.author">{{formErrors.author}}</mat-error>
+            </mat-form-field>
+            </p>
+            
+  
+  
+           
+  
+  
+            <p>
+            <!--  <mat-form-field class="half-width">
+                <input matInput formControlName="rating" placeholder="rating"  required>
+             formControlName="slider" id='sliderelement' [(ngModel)]="value" type="MinRange" required
+              </mat-form-field>
+            -->
+              
+            
+             
+                <mat-card-content  [value]="rating" >
+               
+              
+                  <mat-slider
+                      formControlName="rating"
+                      class="example-margin"
+                      [disabled]="disabled"
+                      [invert]="invert"
+                      [max]="max"
+                      [min]="min"
+                      [step]="step"
+                      [thumbLabel]="thumbLabel"
+                      [tickInterval]="getSliderTickInterval()"
+                      [(ngModel)]="value"
+                      [vertical]="vertical">
+                  </mat-slider>
+                </mat-card-content>
+              
+                
+          
+  
+  
+             
+            </p>
+           <!-- <p>
+            <mat-form-field class="half-width">
+              <input  matInput formControlName="comment" placeholder="Comment" type="text" rows=12  [(ngModel)]="comment" name="comment" required>
+                          <mat-error *ngIf="formErrors.comment">{{formErrors.comment}}</mat-error>
+            </mat-form-field>
+          </p>
+         -->
+          <p>
+            <mat-form-field class="full-width">
+              <textarea  matInput formControlName="comment" placeholder="Comment" type="text" rows=12  [(ngModel)]="comment" name="comment" required></textarea>
+            </mat-form-field>
+          </p>
+      
+          <button type="submit" mat-button class="background-primary text-floral-white"
+           [disabled]="feedbackForm.invalid">Submit</button>
+        </form>
+      </mat-card>
     </div>
 
+      
+      
+  
   </div>
 
  
+  <div [hidden]="dish">
+    <mat-spinner></mat-spinner><h4>Loading . . . Please Wait</h4>
+  </div>
+
    
 <!--
   <div fxFlex="40"*ngFor="let Commentss of comments > -->

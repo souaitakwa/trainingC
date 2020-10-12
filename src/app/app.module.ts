@@ -16,6 +16,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ReactiveFormsModule } from '@angular/forms';
+import {MatSliderModule} from '@angular/material/slider';
+
 
 
 import { FlexLayoutModule } from "@angular/flex-layout";
@@ -74,7 +76,8 @@ import { LeaderService } from './services/leader.service';
     ReactiveFormsModule,
     MatSelectModule,
     MatSlideToggleModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatSliderModule
   ],
   entryComponents: [
     LoginComponent

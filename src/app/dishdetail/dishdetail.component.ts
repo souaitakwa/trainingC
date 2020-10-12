@@ -1,10 +1,14 @@
-import { Component, OnInit , Input } from '@angular/core';
+import { Component, OnInit , Input,ViewChild } from '@angular/core';
 import { Params, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { Dish } from '../shared/dish';
 import { DishService } from '../services/dish.service';
 
 import { switchMap } from 'rxjs/operators';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Comment } from '../shared/comment';
+import {MatSliderModule} from '@angular/material/slider';
+
 
 
 
@@ -23,14 +27,19 @@ export class DishdetailComponent implements OnInit {
   dishIds: string[];
   prev: string;
   next: string;
- 
+
+  @ViewChild('fform') feedbackFormDirective;
+
   
+  feedbackForm: FormGroup;
+  Comment: Comment;
 
 
 
-  constructor( private dishService : DishService,
-    private route: ActivatedRoute,
-    private location: Location) { }
+  constructor( private dishService : DishService,private route: ActivatedRoute, private location: Location,
+    private fb: FormBuilder) {
+      this.createForm();
+     }
 
   ngOnInit(): void {
    // this.dish = this.dishService.getDish(id);
@@ -56,4 +65,101 @@ export class DishdetailComponent implements OnInit {
     this.prev = this.dishIds[(this.dishIds.length + index - 1) % this.dishIds.length];
     this.next = this.dishIds[(this.dishIds.length + index + 1) % this.dishIds.length];
   }
+
+  formErrors = {
+    'rating': '',
+    'author': '',
+    'comment': ''
+  };
+
+  validationMessages = {
+    'rating': {
+      'required':      'rating is required.',
+      'pattern':       'rating must contain only numbers.'
+    },
+    'author': {
+      'required':      'Author Name is required.',
+      'minlength':     'Author Name must be at least 2 characters long.',
+      'maxlength':     'Author Name cannot be more than 25 characters long.'
+    },
+    'comment': {
+      'required':      'Comment is required.',
+      'minlength':     'comment must be at least 2 characters long.',
+    },
+  
+  };
+
+
+//  Form part 
+  createForm() {
+    this.feedbackForm = this.fb.group({
+     // rating: ['', [Validators.required, Validators.pattern] ],
+     rating : 3,
+      author: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(25)] ],
+     comment: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(25)] ],
+     date : Date.now()
+     
+    });
+    this.feedbackForm.valueChanges
+    .subscribe(data => this.onValueChanged(data));
+
+  this.onValueChanged(); // (re)set validation messages now
+  }
+
+
+  onValueChanged(data?: any) {
+    if (!this.feedbackForm) { return; }
+    const form = this.feedbackForm;
+    for (const field in this.formErrors) {
+      if (this.formErrors.hasOwnProperty(field)) {
+        // clear previous error message (if any)
+        this.formErrors[field] = '';
+        const control = form.get(field);
+        if (control && control.dirty && !control.valid) {
+          const messages = this.validationMessages[field];
+          for (const key in control.errors) {
+            if (control.errors.hasOwnProperty(key)) {
+              this.formErrors[field] += messages[key] + ' ';
+            }
+          }
+        }
+      }
+    }
+  }
+
+  onSubmit() {
+    this.Comment = this.feedbackForm.value;
+    console.log(this.Comment);
+    this.feedbackForm.reset({
+      rating:1,
+      author: '',
+      comment: '',
+
+    });
+    this.feedbackFormDirective.resetForm();
+  }
+
+
+
+
+
+    autoTicks = true;
+    disabled = false;
+    invert = false;
+    max = 5;
+    min = 1;
+    showTicks = true;
+    step = 1;
+    thumbLabel = true;
+    value = 1;
+    vertical = false;
+    tickInterval = 1;
+  
+    getSliderTickInterval(): number | 'auto' {
+      if (this.showTicks) {
+        return this.autoTicks ? 'auto' : this.tickInterval;
+      }
+  
+      return 0;
+    }
 }
