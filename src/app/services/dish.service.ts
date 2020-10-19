@@ -1,17 +1,23 @@
 import { Injectable } from '@angular/core';
 import { Dish } from '../shared/dish';
-import { DISHES } from '../shared/dishes';
+//import { DISHES } from '../shared/dishes';
 
 
 import { of, Observable } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { catchError, delay } from 'rxjs/operators';
+
+import { map } from 'rxjs/operators';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { baseURL } from '../shared/baseurl';
+import { ProcessHTTPMsgService } from './process-httpmsg.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DishService {
 
-  constructor() { }
+  constructor(private http: HttpClient,
+    private processHTTPMsgService: ProcessHTTPMsgService) { }
 
 
  /* getDishes() : Dish[]{ 
@@ -87,7 +93,7 @@ getFeaturedDish(): Promise<Dish> {
  // because when we update our services to use the HTTP service to go to a server to fetch the data, then we would note that in Angular the HTTP methods will return observables.
 */
 
-
+/*
 getDishes(): Observable<Dish[]> {
   return of(DISHES).pipe(delay(2000));
 }
@@ -102,5 +108,40 @@ getFeaturedDish(): Observable<Dish> {
 
 getDishIds(): Observable<string[] | any> {
   return of(DISHES.map(dish => dish.id ));
+}
+ 
+fetsh data from the dishes class
+*/
+
+
+getDishes(): Observable<Dish[]> {
+  return this.http.get<Dish[]>(baseURL + 'dishes')
+    .pipe(catchError(this.processHTTPMsgService.handleError));
+}
+
+getDish(id: number): Observable<Dish> {
+  return this.http.get<Dish>(baseURL + 'dishes/' + id)
+    .pipe(catchError(this.processHTTPMsgService.handleError));
+}
+
+getFeaturedDish(): Observable<Dish> {
+  return this.http.get<Dish[]>(baseURL + 'dishes?featured=true').pipe(map(dishes => dishes[0]))
+    .pipe(catchError(this.processHTTPMsgService.handleError));
+}
+
+getDishIds(): Observable<number[] | any> {
+  return this.getDishes().pipe(map(dishes => dishes.map(dish => dish.id)))
+    .pipe(catchError(error => error));
+}
+
+putDish(dish: Dish): Observable<Dish> {
+  const httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type':  'application/json'
+    })
+  };
+  return this.http.put<Dish>(baseURL + 'dishes/' + dish.id, dish, httpOptions)
+    .pipe(catchError(this.processHTTPMsgService.handleError));
+
 }
 }

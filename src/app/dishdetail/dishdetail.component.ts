@@ -1,4 +1,4 @@
-import { Component, OnInit , Input,ViewChild } from '@angular/core';
+import { Component, OnInit , Input,ViewChild, Inject } from '@angular/core';
 import { Params, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { Dish } from '../shared/dish';
@@ -8,6 +8,7 @@ import { switchMap } from 'rxjs/operators';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Comment } from '../shared/comment';
 import {MatSliderModule} from '@angular/material/slider';
+import { baseURL } from '../shared/baseurl';
 
 
 
@@ -27,6 +28,11 @@ export class DishdetailComponent implements OnInit {
   dishIds: string[];
   prev: string;
   next: string;
+  errMess: string;
+  testURL = baseURL;
+
+
+  dishcopy: Dish;
 
   @ViewChild('fform') feedbackFormDirective;
 
@@ -37,7 +43,9 @@ export class DishdetailComponent implements OnInit {
 
 
   constructor( private dishService : DishService,private route: ActivatedRoute, private location: Location,
-    private fb: FormBuilder) {
+    private fb: FormBuilder,
+   // @Inject('baseURL') private baseURL
+   ) {
       this.createForm();
      }
 
@@ -49,9 +57,16 @@ export class DishdetailComponent implements OnInit {
    this.dishService.getDish(id).subscribe(dish=>  this.dish =dish )
    
 */
-   this.dishService.getDishIds().subscribe(dishIds => this.dishIds = dishIds);
-   this.route.params.pipe(switchMap((params: Params) => this.dishService.getDish(params['id'])))
-   .subscribe(dish => { this.dish = dish; this.setPrevNext(dish.id); });
+this.createForm();
+   this.dishService.getDishIds()
+   .subscribe((dishIds) => this.dishIds = dishIds); 
+    
+  this.route.params
+   .pipe(switchMap((params: Params) => this.dishService.getDish(params['id'])))
+   .subscribe(dish => { this.dish = dish; this.dishcopy = dish; this.setPrevNext(dish.id); },
+     errmess => this.errMess = <any>errmess );
+
+ 
 
   }
 
@@ -130,6 +145,16 @@ export class DishdetailComponent implements OnInit {
   onSubmit() {
     this.Comment = this.feedbackForm.value;
     console.log(this.Comment);
+    
+    //put
+    this.dishcopy.comments.push(this.Comment);
+    this.dishService.putDish(this.dishcopy)
+      .subscribe(dish => {
+        this.dish = dish; this.dishcopy = dish;
+      },
+      errmess => { this.dish = null; this.dishcopy = null; this.errMess = <any>errmess; });
+
+
     this.feedbackForm.reset({
       rating:1,
       author: '',
