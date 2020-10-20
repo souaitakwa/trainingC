@@ -1,16 +1,22 @@
 import { Injectable } from '@angular/core';
 import { Promotion } from '../shared/promotion';
-import { PROMOTIONS } from '../shared/promotions';
+//import { PROMOTIONS } from '../shared/promotions';
 
 import { of, Observable } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
+
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { baseURL } from '../shared/baseurl';
+import { ProcessHTTPMsgService } from './process-httpmsg.service';
+import { catchError, delay } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
 export class PromotionService {
 
-  constructor() { }
+  constructor(private http: HttpClient,
+    private processHTTPMsgService: ProcessHTTPMsgService) { }
 /*
   getPromotions(): Promotion[] {
     return PROMOTIONS;
@@ -62,19 +68,43 @@ getFeaturedPromotion(): Promise<Promotion> {
   });
 }
 */
-
+/*
 getPromotions(): Observable<Promotion[]> {
   return of(PROMOTIONS).pipe(delay(2000));
 }
+*/
+getPromotions(): Observable<Promotion[]> {
+  return this.http.get<Promotion[]>(baseURL + 'promotions')
+    .pipe(catchError(this.processHTTPMsgService.handleError));
+}
 
+/*
 getPromotion(id: string): Observable<Promotion> {
   return of(PROMOTIONS.filter((promotion) => (promotion.id === id))[0]).pipe(delay(2000));
 }
+*/
+getPromotion(id: number): Observable<Promotion> {
+  return this.http.get<Promotion>(baseURL + 'promotions/' + id)
+    .pipe(catchError(this.processHTTPMsgService.handleError));
+}
+/*
 
 getFeaturedPromotion(): Observable<Promotion> {
   return of(PROMOTIONS.filter((promotion) => promotion.featured)[0]).pipe(delay(2000));
 }
+*/
 
+
+getFeaturedPromotion(): Observable<Promotion> {
+  return this.http.get<Promotion[]>(baseURL + 'promotions?featured=true').pipe(map(promotions => promotions[0]))
+    .pipe(catchError(this.processHTTPMsgService.handleError));
+}
+
+
+getPromotionIds(): Observable<number[] | any> {
+  return this.getPromotions().pipe(map(dishes => dishes.map(dish => dish.id)))
+    .pipe(catchError(error => error));
+}
 
 
 }

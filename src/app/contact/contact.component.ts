@@ -2,14 +2,32 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { Feedback, ContactType } from '../shared/feedback';
+import { flyInOut } from '../animations/app.animation';
+import { FeedbackService } from '../services/feedback.service';
+
+import { Params, ActivatedRoute } from '@angular/router';
+
+
+import { switchMap } from 'rxjs/operators';
+import { Comment } from '../shared/comment';
+import {MatSliderModule} from '@angular/material/slider';
+import { baseURL } from '../shared/baseurl';
+
 
 @Component({
   selector: 'app-contact',
   templateUrl: './contact.component.html',
-  styleUrls: ['./contact.component.scss']
+  styleUrls: ['./contact.component.scss'],
+  host: {
+    '[@flyInOut]': 'true',
+    'style': 'display: block;'
+    },
+    animations: [
+      flyInOut()
+    ]
 })
 export class ContactComponent implements OnInit {
-
+  errMess: string;
   formErrors = {
     'firstname': '',
     'lastname': '',
@@ -42,12 +60,14 @@ export class ContactComponent implements OnInit {
   feedback: Feedback;
   contactType = ContactType;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private feedbackService : FeedbackService, private route: ActivatedRoute) {
     this.createForm();
    }
  
 
   ngOnInit(): void {
+
+
   }
 
   @ViewChild('fform') feedbackFormDirective;
@@ -103,6 +123,12 @@ export class ContactComponent implements OnInit {
       contacttype: 'None',
       message: ''
     });
+    this.feedbackService.submitFeedback(this.feedback)
+      .subscribe(dish => {
+        this.feedback = dish; 
+      },
+      errmess => { this.feedback = null;
+         this.errMess = <any>errmess; });
     this.feedbackFormDirective.resetForm();
   }
 }

@@ -10,6 +10,8 @@ import { Comment } from '../shared/comment';
 import {MatSliderModule} from '@angular/material/slider';
 import { baseURL } from '../shared/baseurl';
 
+import { visibility ,expand} from '../animations/app.animation';
+
 
 
 
@@ -20,7 +22,11 @@ import { baseURL } from '../shared/baseurl';
 @Component({
   selector: 'app-dishdetail',
   templateUrl: './dishdetail.component.html',
-  styleUrls: ['./dishdetail.component.scss']
+  styleUrls: ['./dishdetail.component.scss'],
+  animations: [
+    visibility(),
+    expand()
+  ]
 })
 export class DishdetailComponent implements OnInit {
   dish : Dish;
@@ -33,6 +39,7 @@ export class DishdetailComponent implements OnInit {
 
 
   dishcopy: Dish;
+  visibility = 'shown';
 
   @ViewChild('fform') feedbackFormDirective;
 
@@ -57,6 +64,7 @@ export class DishdetailComponent implements OnInit {
    this.dishService.getDish(id).subscribe(dish=>  this.dish =dish )
    
 */
+/*
 this.createForm();
    this.dishService.getDishIds()
    .subscribe((dishIds) => this.dishIds = dishIds); 
@@ -65,8 +73,13 @@ this.createForm();
    .pipe(switchMap((params: Params) => this.dishService.getDish(params['id'])))
    .subscribe(dish => { this.dish = dish; this.dishcopy = dish; this.setPrevNext(dish.id); },
      errmess => this.errMess = <any>errmess );
-
- 
+wihout animation 
+ */
+this.dishService.getDishIds()
+.subscribe((dishIds) => this.dishIds = dishIds); 
+this.route.params.pipe(switchMap((params: Params) => { this.visibility = 'hidden'; return this.dishService.getDish(+params['id']); }))
+.subscribe(dish => { this.dish = dish; this.dishcopy = dish; this.setPrevNext(dish.id); this.visibility = 'shown'; },
+  errmess => this.errMess = <any>errmess);
 
   }
 
